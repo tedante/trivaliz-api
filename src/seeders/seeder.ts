@@ -23,10 +23,10 @@ const seedRolesAndUsers = async () => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash('password', salt);
       users.push({
+        country: 'Indonesia',
         username: `user${i + 1}`,
         password: hashedPassword,
         email: `user${i + 1}@yopmail.com`,
-        country: 'Indonesia',
       });
     }
 
