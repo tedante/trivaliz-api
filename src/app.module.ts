@@ -3,12 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { DATABASE } from './common/config';
+
+console.log(DATABASE);
+
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI, { dbName: process.env.MONGO_DB_NAME }),
+    MongooseModule.forRoot(DATABASE.URI, { dbName: DATABASE.DB_NAME }),
     UserModule,
   ],
   controllers: [AppController],
