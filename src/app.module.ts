@@ -7,6 +7,8 @@ import { DATABASE } from './common/config';
 import { RateLimiterModule, RateLimiterGuard } from 'nestjs-rate-limiter'
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
+import { GameModule } from './game/game.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { AuthModule } from './auth/auth.module';
       points: 10, // Number of points
       duration: 1, // Per second(s)
     }),
-    AuthModule
+    AuthModule,
+    GameModule,
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [AppService, {
