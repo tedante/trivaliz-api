@@ -1,0 +1,191 @@
+openapi: 3.0.0
+info:
+  title: Family Feud Game API
+  description: API documentation for the Family Feud web game.
+  version: 1.0.0
+servers:
+  - url: https://example.com/api
+    description: Production server
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+
+  /auth/logout:
+    post:
+      summary: Logout
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /user/profile:
+    get:
+      summary: Get user profile
+      responses:
+        '200':
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  profileImage:
+                    type: string
+
+  /user/profile/image:
+    post:
+      summary: Upload profile image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Profile image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /game/start:
+    post:
+      summary: Start a new game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+              required:
+                - country
+      responses:
+        '201':
+          description: Game started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gameId:
+                    type: string
+                  status:
+                    type: string
+                  country:
+                    type: string
+
+  /game/question:
+    get:
+      summary: Get a question for the game
+      responses:
+        '200':
+          description: Question retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questionId:
+                    type: string
+                  question:
+                    type: string
+                  timeLimit:
+                    type: integer
+
+  /game/answer:
+    post:
+      summary: Submit an answer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questionId:
+                  type: string
+                answer:
+                  type: string
+              required:
+                - questionId
+                - answer
+      responses:
+        '200':
+          description: Answer submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  score:
+                    type: integer
+
+  /game/leaderboard:
+    get:
+      summary: Get the game leaderboard
+      responses:
+        '200':
+          description: Leaderboard retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    player:
+                      type: string
+                    score:
+                      type: integer
