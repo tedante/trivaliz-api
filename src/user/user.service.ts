@@ -6,7 +6,7 @@ import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
@@ -24,7 +24,14 @@ export class UserService {
     return createdUser.save();
   }
 
-  async findOne(email: string): Promise<User> {
+  async findOneByEmail(email: string): Promise<User> {
     return this.userModel.findOne({ email }).exec();
+  }
+
+  async findOneById(id: string): Promise<User> {
+    return await this.userModel.findById(id, {
+      password: 0,
+      __v: 0,
+    }).exec();
   }
 }
