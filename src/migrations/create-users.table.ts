@@ -15,7 +15,7 @@ const dynamoDB = new AWS.DynamoDB({
 
 
 const params = {
-  TableName: 'Users4',
+  TableName: 'Users',
   KeySchema: [
     { AttributeName: 'id', KeyType: 'HASH' },
   ],

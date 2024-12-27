@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
-imprt { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { log } from 'console';
+import { config } from 'dotenv';
+
+config();
 
 // @Injectable()
 // export class DynamoDBService {
@@ -45,6 +49,8 @@ imprt { DocumentClient } from 'aws-sdk/clients/dynamodb';
 const { AWS_DYNAMODB_ENDPOINT_URL, AWS_REGION } = process.env;
 
 export const dynamoDBClient = (): DocumentClient => {
+
+  console.log(`AWS_DYNAMODB_ENDPOINT_URL: ${AWS_DYNAMODB_ENDPOINT_URL}`);
   return new AWS.DynamoDB.DocumentClient({
     region: AWS_REGION,
     endpoint: AWS_DYNAMODB_ENDPOINT_URL,
