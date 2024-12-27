@@ -1,17 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { CLIENT_URL, PORT } from './common/config';
-import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  app.enableCors({
-    origin: CLIENT_URL.split(";").map((el) => el.trim()),
-  });
-
-  app.use(helmet());
-
-  await app.listen(PORT);
+  await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
