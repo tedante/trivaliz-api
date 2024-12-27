@@ -9,6 +9,11 @@ export const DATABASE = {
   DB_NAME: process.env.MONGO_DB_NAME,
 };
 
+export const DYNAMODB = {
+  ENDPOINT: process.env.DYNAMODB_ENDPOINT || 'http://localhost:8000',
+  REGION: process.env.DYNAMODB_REGION || 'us-west-2',
+}
+
 export const aws = {
   region: process.env.AWS_REGION,
   userPoolId: process.env.AWS_COGNITO_USER_POOL_ID,

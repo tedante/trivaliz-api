@@ -12,10 +12,10 @@ import { GameModule } from './game/game.module';
 import { GeminiService } from './gemini/gemini.service';
 import { GeminiModule } from './gemini/gemini.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { DynamoDBService } from './dynamodb/dynamodb.service';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(DATABASE.URI, { dbName: DATABASE.DB_NAME }),
     UserModule,
     RateLimiterModule.register({
       points: 10, // Number of points
@@ -30,7 +30,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
   providers: [AppService, {
     provide: APP_GUARD,
     useClass: RateLimiterGuard,
-  }, GeminiService],
+  }, GeminiService, DynamoDBService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

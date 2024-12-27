@@ -30,6 +30,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@types/dotenv": "^8.2.3",
+    "aws-sdk": "^2.1692.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
     "helmet": "^8.0.0",
