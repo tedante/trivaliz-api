@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { dynamoDBClient } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
+import { count } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -20,6 +21,7 @@ export class UsersService {
           username: user.username,
           email: user.email,
           password: user.password,
+          country: user.country,
         },
       })
       .promise();
@@ -33,17 +35,34 @@ export class UsersService {
     return await dynamoDBClient().get(params).promise();
   }
 
+  async findByEmail(email: string): Promise<any> {
+    const params = {
+      TableName: 'Users',
+      FilterExpression: '#email = :email',
+      ExpressionAttributeNames: {
+        '#email': 'email',
+      },
+      ExpressionAttributeValues: {
+        ':email': email,
+      },
+    };
+
+    return await dynamoDBClient().scan(params).promise();
+  }
+
   async findByUsername(username: string): Promise<any> {
     const params = {
       TableName: 'Users',
-      IndexName: 'UsernameIndex',
-      KeyConditionExpression: 'username',
+      FilterExpression: '#username = :username',
+      ExpressionAttributeNames: {
+        '#username': 'username',
+      },
       ExpressionAttributeValues: {
         ':username': username,
       },
     };
 
-    return await dynamoDBClient().query(params).promise();
+    return await dynamoDBClient().scan(params).promise();
   }
 
   async update(id: string, data: any): Promise<any> {

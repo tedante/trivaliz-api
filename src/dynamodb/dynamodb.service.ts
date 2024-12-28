@@ -49,7 +49,6 @@ config();
 const { AWS_DYNAMODB_ENDPOINT_URL, AWS_REGION } = process.env;
 
 export const dynamoDBClient = (): DocumentClient => {
-  console.log(`AWS_DYNAMODB_ENDPOINT_URL: ${AWS_DYNAMODB_ENDPOINT_URL}`);
   return new AWS.DynamoDB.DocumentClient({
     region: AWS_REGION,
     endpoint: AWS_DYNAMODB_ENDPOINT_URL,
