@@ -18,7 +18,7 @@
 // export class AuthService {
 //   constructor(private usersService: UsersService) {
 //     Amplify.configure({
-//       Auth: { 
+//       Auth: {
 //         Cognito: {
 //           userPoolId: process.env.COGNITO_USER_POOL_ID,
 //           userPoolClientId: process.env.COGNITO_CLIENT_ID,
@@ -37,7 +37,7 @@
 
 //     try {
 //       console.log(signUp, ">>>>");
-      
+
 //       const signUpResult = await signUp({
 //         username,
 //         password,
@@ -96,11 +96,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(username: string, email: string, password: string, country: string) {
+  async register(
+    username: string,
+    email: string,
+    password: string,
+    country: string,
+  ) {
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
       const findUser = await this.usersService.findByEmail(email);
-      
+
       if (findUser.Count > 0) {
         throw new UnauthorizedException('Email already exists');
       }

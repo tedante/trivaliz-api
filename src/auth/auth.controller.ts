@@ -29,7 +29,7 @@ export class AuthController {
         // email: email,
         // country: country,
       },
-    }
+    };
   }
 
   @Post('login')

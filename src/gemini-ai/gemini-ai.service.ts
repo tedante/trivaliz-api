@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
-export class GeminiAiService {
-  private genAI: GoogleGenerativeAI;
+export class GeminiService {
+  constructor() {}
 
-  constructor(private configService: ConfigService) {
-    this.genAI = new GoogleGenerativeAI(
-      this.configService.get<string>('GEMINI_API_KEY'),
-    );
-  }
+  async generateQuestion(prompt: string): Promise<any> {
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
-  async generateQuestions(country: string): Promise<any[]> {
-    const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
-
-    const prompt = `Generate 10 Family Feud style questions and answers specific to ${country}. Format the response as a JSON array of objects, each containing a 'question' field and an 'answers' field (which is an array of objects with 'text' and 'points' fields).`;
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+    });
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const responseText = await result.response.text().trim();
+    // remove from the responseText ```json and ```
+    const response = responseText.substring(7, responseText.length - 3);
 
-    return JSON.parse(text);
+    return JSON.parse(response);
   }
 }
