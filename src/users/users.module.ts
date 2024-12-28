@@ -9,4 +9,3 @@ import { dynamoDBClient } from '../dynamodb/dynamodb.service';
   exports: [UsersService],
 })
 export class UsersModule {}
-

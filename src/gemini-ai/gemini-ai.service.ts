@@ -7,7 +7,9 @@ export class GeminiAiService {
   private genAI: GoogleGenerativeAI;
 
   constructor(private configService: ConfigService) {
-    this.genAI = new GoogleGenerativeAI(this.configService.get<string>('GEMINI_API_KEY'));
+    this.genAI = new GoogleGenerativeAI(
+      this.configService.get<string>('GEMINI_API_KEY'),
+    );
   }
 
   async generateQuestions(country: string): Promise<any[]> {
@@ -22,4 +24,3 @@ export class GeminiAiService {
     return JSON.parse(text);
   }
 }
-

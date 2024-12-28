@@ -4,7 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 config();
 console.log('AWS_REGION:', process.env.AWS_REGION);
-console.log('AWS_DYNAMODB_ENDPOINT_URL:', process.env.AWS_DYNAMODB_ENDPOINT_URL);
+console.log(
+  'AWS_DYNAMODB_ENDPOINT_URL:',
+  process.env.AWS_DYNAMODB_ENDPOINT_URL,
+);
 const dynamoDB = new AWS.DynamoDB.DocumentClient({
   region: process.env.AWS_REGION,
   endpoint: process.env.AWS_DYNAMODB_ENDPOINT_URL,
@@ -16,16 +19,16 @@ const users = [
   {
     id: uuidv4(),
     username: 'user1',
-    email: 'user1@example.com',
+    email: 'user1@yopmail.com',
     password: 'hashedpassword1',
-    country: 'USA',
+    country: 'Indonesia',
   },
   {
     id: uuidv4(),
     username: 'user2',
-    email: 'user2@example.com',
+    email: 'user2@yopmail.com',
     password: 'hashedpassword2',
-    country: 'Canada',
+    country: 'Indonesia',
   },
   // Add more sample users as needed
 ];
@@ -44,4 +47,3 @@ users.forEach((user) => {
     }
   });
 });
-

@@ -11,76 +11,60 @@ export class UsersService {
     return await dynamoDBClient().scan(params).promise();
   }
 
-  async create() {
+  async create(user: any): Promise<any> {
     return await dynamoDBClient()
       .put({
         TableName: 'Users',
         Item: {
           id: uuidv4(),
-          username: 'user1',
-          email: 'user1@yopmail.com',
-          password: 'password1',
+          username: user.username,
+          email: user.email,
+          password: user.password,
         },
       })
       .promise();
   }
 
-  // async findOne(id: string): Promise<any> {
-  //   const params = {
-  //     TableName: 'Users',
-  //     Key: { id },
-  //   };
-  //   const result = await this.dynamoDBService.findOne(params);
-  //   return result.Item;
-  // }
+  async findOne(id: string): Promise<any> {
+    const params = {
+      TableName: 'Users',
+      Key: { id },
+    };
+    return await dynamoDBClient().get(params).promise();
+  }
 
-  // async findByUsername(username: string): Promise<any> {
-  //   const params = {
-  //     TableName: 'Users',
-  //     IndexName: 'UsernameIndex',
-  //     KeyConditionExpression: 'username = :username',
-  //     ExpressionAttributeValues: {
-  //       ':username': username,
-  //     },
-  //   };
-  //   const result = await this.dynamoDBService.query(params);
-  //   return result.Items[0];
-  // }
+  async findByUsername(username: string): Promise<any> {
+    const params = {
+      TableName: 'Users',
+      IndexName: 'UsernameIndex',
+      KeyConditionExpression: 'username',
+      ExpressionAttributeValues: {
+        ':username': username,
+      },
+    };
 
-  // async findAll(): Promise<any[]> {
-  //   const params = {
-  //     TableName: 'Users',
-  //   };
-  //   const result = await this.dynamoDBService.findAll(params);
-  //   return result.Items;
-  // }
+    return await dynamoDBClient().query(params).promise();
+  }
 
-  // async update(id: string, user: any): Promise<any> {
-  //   const params = {
-  //     TableName: 'Users',
-  //     Key: { id },
-  //     UpdateExpression: 'set #username = :username, #email = :email, #country = :country',
-  //     ExpressionAttributeNames: {
-  //       '#username': 'username',
-  //       '#email': 'email',
-  //       '#country': 'country',
-  //     },
-  //     ExpressionAttributeValues: {
-  //       ':username': user.username,
-  //       ':email': user.email,
-  //       ':country': user.country,
-  //     },
-  //     ReturnValues: 'ALL_NEW',
-  //   };
-  //   const result = await this.dynamoDBService.update(params);
-  //   return result.Attributes;
-  // }
+  async update(id: string, data: any): Promise<any> {
+    const params = {
+      TableName: 'Users',
+      Key: { id },
+      UpdateExpression: 'set username = :username, email = :email',
+      ExpressionAttributeValues: {
+        ':username': data.username,
+        ':email': data.email,
+      },
+      ReturnValues: 'ALL_NEW',
+    };
+    return await dynamoDBClient().update(params).promise();
+  }
 
-  // async delete(id: string): Promise<void> {
-  //   const params = {
-  //     TableName: 'Users',
-  //     Key: { id },
-  //   };
-  //   await this.dynamoDBService.delete(params);
-  // }
+  async delete(id: string): Promise<any> {
+    const params = {
+      TableName: 'Users',
+      Key: { id },
+    };
+    return await dynamoDBClient().delete(params).promise();
+  }
 }

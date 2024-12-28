@@ -13,12 +13,9 @@ const dynamoDB = new AWS.DynamoDB({
   secretAccessKey: 'fakeSecretAccessKey', // Dummy values for local DynamoDB
 });
 
-
 const params = {
   TableName: 'Users',
-  KeySchema: [
-    { AttributeName: 'id', KeyType: 'HASH' },
-  ],
+  KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
   AttributeDefinitions: [
     { AttributeName: 'id', AttributeType: 'S' },
     { AttributeName: 'username', AttributeType: 'S' },
@@ -30,9 +27,7 @@ const params = {
   GlobalSecondaryIndexes: [
     {
       IndexName: 'UsernameIndex',
-      KeySchema: [
-        { AttributeName: 'username', KeyType: 'HASH' },
-      ],
+      KeySchema: [{ AttributeName: 'username', KeyType: 'HASH' }],
       Projection: {
         ProjectionType: 'ALL',
       },
@@ -51,4 +46,3 @@ dynamoDB.createTable(params, (err, data) => {
     console.log('Table created successfully:', data);
   }
 });
-
