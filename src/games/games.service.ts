@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GeminiService } from 'src/gemini-ai/gemini-ai.service';
 import { dynamoDBClient } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class GamesService {
@@ -72,5 +73,43 @@ export class GamesService {
         };
       }),
     };
+  }
+
+  async findGame(gameId: string): Promise<any> {
+    const params = {
+      TableName: 'Games',
+      Key: { id: gameId },
+    };
+
+    const result = await dynamoDBClient().get(params).promise();
+    if (!result.Item) {
+      throw new NotFoundException(`Game with ID ${gameId} not found`);
+    }
+    return result.Item;
+  }
+
+  async submitAnswer(
+    gameId: string,
+    question: string,
+    answer: string,
+  ): Promise<{ points: number }> {
+    const game = await this.findGame(gameId);
+    const questionObj = game.questions.find((q) => q.question === question);
+
+    if (!questionObj) {
+      throw new NotFoundException(
+        `Question "${question}" not found in game ${gameId}`,
+      );
+    }
+
+    const matchingAnswer = questionObj.answers.find(
+      (a) => a.text.toLowerCase() === answer.toLowerCase(),
+    );
+
+    if (matchingAnswer) {
+      return { points: matchingAnswer.points };
+    } else {
+      return { points: 0 };
+    }
   }
 }
