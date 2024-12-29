@@ -5,9 +5,7 @@ import { GeminiService } from '../gemini-ai/gemini-ai.service';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [
-    UsersModule,
-  ],
+  imports: [UsersModule],
   controllers: [GamesController],
   providers: [GamesService, GeminiService],
   exports: [GamesService],

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GeminiService } from 'src/gemini-ai/gemini-ai.service';
 import { dynamoDBClient } from '../dynamodb/dynamodb.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class GamesService {
@@ -10,6 +11,7 @@ export class GamesService {
     const params = {
       TableName: 'Games',
       Item: {
+        id: uuidv4(),
         ...game,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -53,13 +55,22 @@ export class GamesService {
       question: response,
     };
 
-    await this.create(newGame);
+    const gameCreated = await this.create(newGame);
 
     return {
-      // id: newGame.id,
-      status: newGame.status,
-      country: newGame.country,
-      question: newGame.question,
+      id: gameCreated.id,
+      status: gameCreated.status,
+      country: gameCreated.country,
+      question: gameCreated.question.map((e) => {
+        return {
+          question: e.question,
+          answers: e.answers.map((answer) => {
+            return {
+              text: answer.text,
+            };
+          }),
+        };
+      }),
     };
   }
 }

@@ -39,10 +39,44 @@ const params = {
   ],
 };
 
+const gameTable = {
+  TableName: 'Games',
+  KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+  AttributeDefinitions: [
+    { AttributeName: 'id', AttributeType: 'S' },
+    { AttributeName: 'hostId', AttributeType: 'S' },
+  ],
+  ProvisionedThroughput: {
+    ReadCapacityUnits: 5,
+    WriteCapacityUnits: 5,
+  },
+  GlobalSecondaryIndexes: [
+    {
+      IndexName: 'HostIdIndex',
+      KeySchema: [{ AttributeName: 'hostId', KeyType: 'HASH' }],
+      Projection: {
+        ProjectionType: 'ALL',
+      },
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 5,
+        WriteCapacityUnits: 5,
+      },
+    },
+  ],
+};
+
 dynamoDB.createTable(params, (err, data) => {
   if (err) {
     console.error('Error creating table:', err);
   } else {
-    console.log('Table created successfully:', data);
+    console.log('Table User successfully created');
+
+    dynamoDB.createTable(gameTable, (err, data) => {
+      if (err) {
+        console.error('Error creating table:', err);
+      } else {
+        console.log('Table Games successfully created');
+      }
+    });
   }
 });
