@@ -65,6 +65,22 @@ const gameTable = {
   ],
 };
 
+const userGameAnswerTable = {
+  TableName: 'UserGameAnswers',
+  KeySchema: [
+    { AttributeName: 'userId', KeyType: 'HASH' },
+    { AttributeName: 'gameId', KeyType: 'RANGE' },
+  ],
+  AttributeDefinitions: [
+    { AttributeName: 'userId', AttributeType: 'S' },
+    { AttributeName: 'gameId', AttributeType: 'S' },
+  ],
+  ProvisionedThroughput: {
+    ReadCapacityUnits: 5,
+    WriteCapacityUnits: 5,
+  },
+}
+
 dynamoDB.createTable(params, (err, data) => {
   if (err) {
     console.error('Error creating table:', err);
@@ -76,6 +92,14 @@ dynamoDB.createTable(params, (err, data) => {
         console.error('Error creating table:', err);
       } else {
         console.log('Table Games successfully created');
+
+        dynamoDB.createTable(userGameAnswerTable, (err, data) => {
+          if (err) {
+            console.error('Error creating table:', err);
+          } else {
+            console.log('Table UserGameAnswers successfully created');
+          }
+        });
       }
     });
   }
