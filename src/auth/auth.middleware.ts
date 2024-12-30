@@ -1,7 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { JWT_SECRET } from 'src/common/config';
+import { config } from 'dotenv';
+
+config();
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -10,7 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       try {
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
       } catch (err) {
         return res.status(401).json({ message: 'Unauthorized' });
