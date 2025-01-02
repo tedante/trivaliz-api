@@ -18,8 +18,8 @@ export class GamesGateway {
 
   constructor(private gamesService: GamesService) {}
 
-  @SubscribeMessage('joinGame')
-  async handleJoinGame(
+  @SubscribeMessage('joinRoom')
+  async joinRoom(
     @MessageBody() data: { gameId: string; playerId: string },
     @ConnectedSocket() client: Socket,
   ) {
@@ -28,6 +28,19 @@ export class GamesGateway {
     client.data.playerId = playerId;
     client.data.gameId = gameId;
     this.server.to(gameId).emit('playerJoined', { playerId, gameId });
+  }
+
+  @SubscribeMessage('startGame')
+  async startGame(
+    @MessageBody() data: { gameId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { gameId } = data;
+    try {
+      this.server.to(gameId).emit('gameStarted');
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
   }
 
   @SubscribeMessage('submitAnswer')
