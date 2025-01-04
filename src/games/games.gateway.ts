@@ -54,6 +54,7 @@ export class GamesGateway {
     try {
       const result = await this.gamesService.submitAnswer(
         gameId,
+        playerId,
         question,
         answer,
       );
