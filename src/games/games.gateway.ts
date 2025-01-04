@@ -69,4 +69,19 @@ export class GamesGateway {
       client.emit('error', { message: error.message });
     }
   }
+
+  @SubscribeMessage('endGame')
+  async handleEndGame(
+    @MessageBody() data: { gameId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { gameId } = data;
+
+    try {
+      const result = await this.gamesService.endGame(gameId);
+      this.server.to(gameId).emit('gameEnded', result);
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
+  }
 }
