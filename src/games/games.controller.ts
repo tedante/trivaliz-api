@@ -1,4 +1,4 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Param, Get, Post, Req } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { Request } from 'express';
 
@@ -8,8 +8,13 @@ export class GamesController {
 
   @Post('start')
   async startGame(@Req() request: Request) {
-    let user = request.user as any;
+    const user = request.user as any;
 
     return this.gamesService.startGame(user.id, user.country);
+  }
+
+  @Get(':gameId')
+  async getGame(@Param('gameId') gameId: string) {
+    return this.gamesService.findGame(gameId);
   }
 }

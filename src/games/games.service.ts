@@ -31,9 +31,9 @@ export class GamesService {
     // Generate question and answer using Google Gemini
     const prompt = `
     You are creating trivia questions for a "Family Feud"-style game. Make 10 the question is relate and with ${country} country also use ${country} language Provide:
-    1. A trivia question. 
+    1. A trivia question.
     2. A list of 4 or 6 possible answers, ordered by popularity. But only between 5 and 8 answers that has a point, 4 question has 5 "correct" answer, 3 question has 6 "correct" answer, 2 question has 7 "correct" answer,
-    3. Points for each answer (100 for the most common, decreasing randomly). 
+    3. Points for each answer (100 for the most common, decreasing randomly).
     Example output:json. please response in json format.
     {
       "question": "Name something people do when they're tired.",
@@ -53,7 +53,7 @@ export class GamesService {
       status: 'created',
       country,
       hostId: userId,
-      question: response,
+      questions: response,
     };
 
     const gameCreated = await this.create(newGame);
@@ -62,7 +62,7 @@ export class GamesService {
       id: gameCreated.id,
       status: gameCreated.status,
       country: gameCreated.country,
-      question: gameCreated.question.map((e) => {
+      questions: gameCreated.questions.map((e) => {
         return {
           question: e.question,
           answers: e.answers.map((answer) => {
