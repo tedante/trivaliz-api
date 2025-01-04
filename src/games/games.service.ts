@@ -4,6 +4,11 @@ import { dynamoDBClient } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
 
+interface PlayerScore {
+  playerId: string;
+  score: number;
+}
+
 @Injectable()
 export class GamesService {
   constructor(private readonly geminiService: GeminiService) {}
@@ -32,7 +37,7 @@ export class GamesService {
     const prompt = `
     You are creating trivia questions for a "Family Feud"-style game. Make 10 the question is relate and with ${country} country also use ${country} language Provide:
     1. A trivia question.
-    2. A list of 4 or 6 possible answers, ordered by popularity. But only between 5 and 8 answers that has a point, 4 question has 5 "correct" answer, 3 question has 6 "correct" answer, 2 question has 7 "correct" answer,
+    2. A list of 4 or 6 possible answers, ordered by popularity. But only between 5 and 8 answers that has a point, 4 question has 4 "correct" answer, 5 question has 6 "correct" answer,
     3. Points for each answer (100 for the most common, decreasing randomly).
     Example output:json. please response in json format.
     {
@@ -90,6 +95,7 @@ export class GamesService {
 
   async submitAnswer(
     gameId: string,
+    playerId: string,
     question: string,
     answer: string,
   ): Promise<{ points: number }> {
@@ -105,11 +111,81 @@ export class GamesService {
     const matchingAnswer = questionObj.answers.find(
       (a) => a.text.toLowerCase() === answer.toLowerCase(),
     );
+    const points = matchingAnswer ? matchingAnswer.points : 0;
 
-    if (matchingAnswer) {
-      return { points: matchingAnswer.points };
-    } else {
-      return { points: 0 };
+    // Update player's score
+    if (!game.players[playerId]) {
+      game.players[playerId] = 0;
     }
+    game.players[playerId] += points;
+
+    // Update the game in the database
+    // await this.dynamoDBService.update({
+    //   TableName: 'Games',
+    //   Key: { id: gameId },
+    //   UpdateExpression: 'SET players = :players',
+    //   ExpressionAttributeValues: {
+    //     ':players': game.players,
+    //   },
+    // });
+
+    await dynamoDBClient()
+      .update({
+        TableName: 'Games',
+        Key: { id: gameId },
+        UpdateExpression: 'SET players = :players',
+        ExpressionAttributeValues: {
+          ':players': game.players,
+        },
+      })
+      .promise();
+
+    return { points };
+  }
+
+  async endGame(gameId: string): Promise<{ rankings: PlayerScore[] }> {
+    const game = await this.findGame(gameId);
+
+    if (game.status === 'ended') {
+      throw new Error('Game has already ended');
+    }
+
+    const rankings: PlayerScore[] = Object.entries(game.players)
+      .map(([playerId, score]) => ({ playerId, score: score as number }))
+      .sort((a, b) => b.score - a.score);
+
+    const params = {
+      TableName: 'Games',
+      Key: { id: gameId },
+      UpdateExpression: 'SET #status = :status, rankings = :rankings',
+      ExpressionAttributeNames: {
+        '#status': 'status',
+      },
+      ExpressionAttributeValues: {
+        ':status': 'ended',
+        ':rankings': rankings,
+      },
+    };
+
+    await dynamoDBClient().update(params).promise();
+
+    return { rankings };
+    // return result.Item;
+
+    // Update game status to 'ended'
+    // await this.dynamoDBService.update({
+    //   TableName: 'Games',
+    //   Key: { id: gameId },
+    //   UpdateExpression: 'SET #status = :status, rankings = :rankings',
+    //   ExpressionAttributeNames: {
+    //     '#status': 'status',
+    //   },
+    //   ExpressionAttributeValues: {
+    //     ':status': 'ended',
+    //     ':rankings': rankings,
+    //   },
+    // });
+
+    // return { rankings };
   }
 }
