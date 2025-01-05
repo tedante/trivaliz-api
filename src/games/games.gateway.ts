@@ -27,7 +27,13 @@ export class GamesGateway {
     await client.join(gameId);
     client.data.playerId = playerId;
     client.data.gameId = gameId;
-    this.server.to(gameId).emit('playerJoined', { playerId, gameId });
+
+    const game = await this.gamesService.findGame(gameId);
+
+    // add player to game table via gamesService
+    await this.gamesService.joinPlayer(game, playerId);
+
+    this.server.to(gameId).emit('playerJoined', { game });
   }
 
   @SubscribeMessage('startGame')
