@@ -88,12 +88,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
+import { CognitoService } from './cognito.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private cognitoService: CognitoService,
   ) {}
 
   async register(
@@ -155,6 +157,27 @@ export class AuthService {
         email: user.email,
         country: user.country,
       },
+    };
+  }
+
+  async signUp(username: string, password: string, email: string) {
+    return this.cognitoService.signUp(username, password, email);
+  }
+
+  async confirmSignUp(username: string, confirmationCode: string) {
+    return this.cognitoService.confirmSignUp(username, confirmationCode);
+  }
+
+  async signIn(username: string, password: string) {
+    const authResult = await this.cognitoService.signIn(username, password);
+    const idToken = authResult.AuthenticationResult.IdToken;
+    const credentials = await this.cognitoService.getCredentials(idToken);
+
+    return {
+      idToken,
+      accessToken: authResult.AuthenticationResult.AccessToken,
+      refreshToken: authResult.AuthenticationResult.RefreshToken,
+      credentials,
     };
   }
 }
