@@ -32,7 +32,7 @@ export class GamesService {
     }
   }
 
-  async startGame(userId: string, country: string) {
+  async startGame(userId: string, country: string, mode: 'SP' | 'MP') {
     // Generate question and answer using Google Gemini
     const prompt = `
     You are creating trivia questions for a "Family Feud"-style game. Make 10 the question is relate and with ${country} country also use ${country} language Provide:
@@ -58,6 +58,7 @@ export class GamesService {
       status: 'created',
       country,
       hostId: userId,
+      mode,
       questions: response,
     };
 
@@ -67,6 +68,8 @@ export class GamesService {
       id: gameCreated.id,
       status: gameCreated.status,
       country: gameCreated.country,
+      mode: gameCreated.mode,
+      hostId: gameCreated.hostId,
       questions: gameCreated.questions.map((e) => {
         return {
           question: e.question,
