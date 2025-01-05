@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GeminiService } from 'src/gemini-ai/gemini-ai.service';
+import { GeminiService } from '../gemini-ai/gemini-ai.service';
 import { dynamoDBClient } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
@@ -60,7 +60,6 @@ export class GamesService {
       hostId: userId,
       questions: response,
     };
-
     const gameCreated = await this.create(newGame);
 
     return {
@@ -91,6 +90,31 @@ export class GamesService {
       throw new NotFoundException(`Game with ID ${gameId} not found`);
     }
     return result.Item;
+  }
+
+  async joinPlayer(game: any, playerId: string): Promise<any> {
+    if (game.status !== 'created') {
+      throw new Error('Game has already started');
+    }
+
+    if (!game.players) {
+      game.players = {};
+    }
+
+    game.players[playerId] = 0;
+
+    await dynamoDBClient()
+      .update({
+        TableName: 'Games',
+        Key: { id: game.id },
+        UpdateExpression: 'SET players = :players',
+        ExpressionAttributeValues: {
+          ':players': game.players,
+        },
+      })
+      .promise();
+
+    return game;
   }
 
   async submitAnswer(

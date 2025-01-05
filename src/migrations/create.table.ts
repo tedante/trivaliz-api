@@ -79,7 +79,7 @@ const userGameAnswerTable = {
     ReadCapacityUnits: 5,
     WriteCapacityUnits: 5,
   },
-}
+};
 
 dynamoDB.createTable(params, (err, data) => {
   if (err) {
