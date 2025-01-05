@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
+import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
   cors: {
@@ -16,7 +17,10 @@ import { GamesService } from './games.service';
 export class GamesGateway {
   @WebSocketServer() server: Server;
 
-  constructor(private gamesService: GamesService) {}
+  constructor(
+    private gamesService: GamesService,
+    private usersService: UsersService,
+  ) {}
 
   @SubscribeMessage('joinRoom')
   async joinRoom(
@@ -33,7 +37,11 @@ export class GamesGateway {
     // add player to game table via gamesService
     await this.gamesService.joinPlayer(game, playerId);
 
-    this.server.to(gameId).emit('playerJoined', { game });
+    // get all players in the game, and send to all clients in the room
+    const playerIds = Object.keys(game.players);
+    const players = await this.usersService.findByIds(playerIds);
+
+    this.server.to(gameId).emit('playersUpdate', { players });
   }
 
   @SubscribeMessage('startGame')

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { dynamoDBClient } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
-import { count } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +32,20 @@ export class UsersService {
       Key: { id },
     };
     return await dynamoDBClient().get(params).promise();
+  }
+
+  async findByIds(ids: string[]): Promise<any> {
+    const keys = ids.map(id => ({ id }));
+    const params = {
+      RequestItems: {
+        'Users': {
+          Keys: keys,
+          ProjectionExpression: 'id, username, email'
+        },
+      },
+    };
+    const response = await dynamoDBClient().batchGet(params).promise();
+    return response.Responses['Users'];
   }
 
   async findByEmail(email: string): Promise<any> {
