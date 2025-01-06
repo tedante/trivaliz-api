@@ -29,8 +29,6 @@ export class GamesGateway {
   ) {
     const { gameId, playerId } = data;
     await client.join(gameId);
-    client.data.playerId = playerId;
-    client.data.gameId = gameId;
 
     const game = await this.gamesService.findGame(gameId);
 
@@ -59,11 +57,10 @@ export class GamesGateway {
 
   @SubscribeMessage('submitAnswer')
   async handleSubmitAnswer(
-    @MessageBody() data: { gameId: string; question: string; answer: string },
+    @MessageBody() data: { gameId: string; playerId: string; question: string; answer: string },
     @ConnectedSocket() client: Socket,
   ) {
-    const { gameId, question, answer } = data;
-    const playerId = client.data.playerId;
+    const { gameId, playerId, question, answer } = data;
 
     try {
       const result = await this.gamesService.submitAnswer(
@@ -78,7 +75,6 @@ export class GamesGateway {
         answer,
         points: result.points,
       });
-      return result;
     } catch (error) {
       client.emit('error', { message: error.message });
     }
@@ -93,7 +89,19 @@ export class GamesGateway {
 
     try {
       const result = await this.gamesService.endGame(gameId);
-      this.server.to(gameId).emit('gameEnded', result);
+
+      console.log(result, "<<result")
+      const playerIds = result.rankings.map((ranking) => ranking.playerId);
+      const players = await this.usersService.findByIds(playerIds);
+
+      console.log(players, "<<players")
+      const rankings = result.rankings.map((ranking) => ({
+        playerId: ranking.playerId,
+        score: ranking.score,
+        player: players.find((player) => player.id === ranking.playerId),
+      }));
+
+      this.server.to(gameId).emit('gameEnded', { rankings });
     } catch (error) {
       client.emit('error', { message: error.message });
     }
