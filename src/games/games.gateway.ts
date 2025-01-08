@@ -57,7 +57,13 @@ export class GamesGateway {
 
   @SubscribeMessage('submitAnswer')
   async handleSubmitAnswer(
-    @MessageBody() data: { gameId: string; playerId: string; question: string; answer: string },
+    @MessageBody()
+    data: {
+      gameId: string;
+      playerId: string;
+      question: string;
+      answer: string;
+    },
     @ConnectedSocket() client: Socket,
   ) {
     const { gameId, playerId, question, answer } = data;
@@ -90,11 +96,11 @@ export class GamesGateway {
     try {
       const result = await this.gamesService.endGame(gameId);
 
-      console.log(result, "<<result")
+      console.log(result, '<<result');
       const playerIds = result.rankings.map((ranking) => ranking.playerId);
       const players = await this.usersService.findByIds(playerIds);
 
-      console.log(players, "<<players")
+      console.log(players, '<<players');
       const rankings = result.rankings.map((ranking) => ({
         playerId: ranking.playerId,
         score: ranking.score,

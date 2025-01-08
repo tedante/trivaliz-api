@@ -82,8 +82,11 @@ export class AuthService {
         await this.usersService.create({
           email: payload.email,
           username: payload.email.split('@')[0],
-          password: bcrypt.hashSync(Math.random().toString(36).substring(7), 10),
-          country: null
+          password: bcrypt.hashSync(
+            Math.random().toString(36).substring(7),
+            10,
+          ),
+          country: null,
         });
 
         user = await this.usersService.findByEmail(payload.email);
