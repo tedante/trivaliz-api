@@ -12,16 +12,20 @@ export class GoogleAuthService {
   }
 
   async verifyIdToken(idToken: string): Promise<any> {
-    const ticket = await this.oauth2Client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    try {
+      const ticket = await this.oauth2Client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
 
-    const payload = ticket.getPayload();
-    return {
-      email: payload.email,
-      name: payload.name,
-      picture: payload.picture,
-    };
+      const payload = ticket.getPayload();
+      return {
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture,
+      };
+    } catch (error) {
+      throw new Error(`Token Invalid`);
+    }
   }
 }

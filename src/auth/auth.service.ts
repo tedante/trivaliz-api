@@ -75,26 +75,30 @@ export class AuthService {
   }
 
   async googleLogin(googleToken: string) {
-    const payload = await this.googleAuthService.verifyIdToken(googleToken);
-    let user = await this.usersService.findByEmail(payload.email);
-    if (user.Count === 0) {
-      await this.usersService.create({
-        email: payload.email,
-        username: payload.email.split('@')[0],
-        password: bcrypt.hashSync(Math.random().toString(36).substring(7), 10),
-        country: null
-      });
+    try {
+      const payload = await this.googleAuthService.verifyIdToken(googleToken);
+      let user = await this.usersService.findByEmail(payload.email);
+      if (user.Count === 0) {
+        await this.usersService.create({
+          email: payload.email,
+          username: payload.email.split('@')[0],
+          password: bcrypt.hashSync(Math.random().toString(36).substring(7), 10),
+          country: null
+        });
 
-      user = await this.usersService.findByEmail(payload.email);
+        user = await this.usersService.findByEmail(payload.email);
+      }
+
+      const userLogin = {
+        id: user.Items[0].id,
+        username: user.Items[0].username,
+        email: user.Items[0].email,
+        country: user.Items[0].country,
+      };
+
+      return userLogin;
+    } catch (error) {
+      throw new UnauthorizedException(`Google login failed: ${error.message}`);
     }
-
-    const userLogin = {
-      id: user.Items[0].id,
-      username: user.Items[0].username,
-      email: user.Items[0].email,
-      country: user.Items[0].country,
-    };
-
-    return userLogin;
   }
 }
