@@ -96,11 +96,9 @@ export class GamesGateway {
     try {
       const result = await this.gamesService.endGame(gameId);
 
-      console.log(result, '<<result');
       const playerIds = result.rankings.map((ranking) => ranking.playerId);
       const players = await this.usersService.findByIds(playerIds);
 
-      console.log(players, '<<players');
       const rankings = result.rankings.map((ranking) => ({
         playerId: ranking.playerId,
         score: ranking.score,

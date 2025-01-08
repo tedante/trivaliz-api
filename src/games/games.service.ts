@@ -37,7 +37,7 @@ export class GamesService {
     const prompt = `
     You are creating trivia questions for a "Family Feud"-style game. Make 10 the question is relate and with ${country} country also use ${country} language Provide:
     1. A trivia question.
-    2. A list of 4 or 6 possible answers, ordered by popularity. But only between 5 and 8 answers that has a point, 4 question has 4 "correct" answer, 5 question has 6 "correct" answer,
+    2. A list of posibble answers must be 4, ordered by popularity.
     3. Points for each answer (100 for the most common, decreasing randomly).
     Example output:json. please response in json format.
     {
@@ -46,9 +46,7 @@ export class GamesService {
         {"text": "Sleep", "points": 40},
         {"text": "Yawn", "points": 30},
         {"text": "Drink coffee", "points": 20},
-        {"text": "Rest on the couch", "points": 10},
-        {"text": "Close their eyes", "points": 5},
-        ...
+        {"text": "Rest on the couch", "points": 10}
       ]
     }. `;
 
