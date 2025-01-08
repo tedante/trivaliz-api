@@ -1,99 +1,15 @@
-// import { Injectable } from '@nestjs/common';
-// // import * as AWS from 'aws-sdk';
-// // import {
-// //   AuthenticationDetails,
-// //   CognitoUser,
-// //   CognitoUserPool,
-// // } from 'amazon-cognito-identity-js';
-
-// import { Amplify } from 'aws-amplify';
-// import { signUp } from '@aws-amplify/auth';
-// import * as bcrypt from 'bcryptjs';
-// import { UsersService } from '../users/users.service';
-// import { config } from 'dotenv';
-
-// config();
-
-// @Injectable()
-// export class AuthService {
-//   constructor(private usersService: UsersService) {
-//     Amplify.configure({
-//       Auth: {
-//         Cognito: {
-//           userPoolId: process.env.COGNITO_USER_POOL_ID,
-//           userPoolClientId: process.env.COGNITO_CLIENT_ID,
-//         },
-//       },
-//     });
-//   }
-
-//   async register(
-//     username: string,
-//     email: string,
-//     password: string,
-//     country: string,
-//   ): Promise<any> {
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     try {
-//       console.log(signUp, ">>>>");
-
-//       const signUpResult = await signUp({
-//         username,
-//         password,
-//         options: {
-//           userAttributes: {
-//             email,
-//             'custom:country': country,
-//           },
-//         },
-//       });
-
-//       await this.usersService.create({
-//         username,
-//         email,
-//         password: hashedPassword,
-//         country,
-//       });
-
-//       return signUpResult;
-//     } catch (error) {
-//       throw new Error(`Registration failed: ${error.message}`);
-//     }
-//   }
-
-//   // async login(username: string, password: string): Promise<any> {
-//   //   try {
-//   //     const user = await Auth.signIn(username, password);
-//   //     const session = user.getSignInUserSession();
-//   //     return {
-//   //       accessToken: session.getAccessToken().getJwtToken(),
-//   //       idToken: session.getIdToken().getJwtToken(),
-//   //       refreshToken: session.getRefreshToken().getToken(),
-//   //     };
-//   //   } catch (error) {
-//   //     throw new Error(`Login failed: ${error.message}`);
-//   //   }
-//   // }
-
-//   // async verifyToken(): Promise<any> {
-//   //   try {
-//   //     return await Auth.currentAuthenticatedUser();
-//   //   } catch (error) {
-//   //     throw new Error('Invalid token');
-//   //   }
-//   // }
-// }
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
+import { GoogleAuthService } from './google.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private googleAuthService: GoogleAuthService,
   ) {}
 
   async register(
@@ -156,5 +72,29 @@ export class AuthService {
         country: user.country,
       },
     };
+  }
+
+  async googleLogin(googleToken: string) {
+    const payload = await this.googleAuthService.verifyIdToken(googleToken);
+    let user = await this.usersService.findByEmail(payload.email);
+    if (user.Count === 0) {
+      await this.usersService.create({
+        email: payload.email,
+        username: payload.email.split('@')[0],
+        password: bcrypt.hashSync(Math.random().toString(36).substring(7), 10),
+        country: null,
+      });
+
+      user = await this.usersService.findByEmail(payload.email);
+    }
+
+    const userLogin = {
+      id: user.Items[0].id,
+      username: user.Items[0].username,
+      email: user.Items[0].email,
+      country: user.Items[0].country,
+    };
+
+    return userLogin;
   }
 }
