@@ -17,7 +17,7 @@ export class UsersController {
   async findOne(@Req() request: Request) {
     const user = request.user as any;
     console.log('user', user);
-    
+
     return this.usersService.findOne(user.id);
   }
 

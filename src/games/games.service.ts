@@ -179,6 +179,19 @@ export class GamesService {
       .map(([playerId, score]) => ({ playerId, score: score as number }))
       .sort((a, b) => b.score - a.score);
 
+    // update xp of users in the database
+    for (const ranking of rankings) {
+      await dynamoDBClient().update({
+        TableName: 'Users',
+        Key: { id: ranking.playerId },
+        UpdateExpression: 'SET xp = xp + :xp',
+        ExpressionAttributeValues: {
+          ':xp': ranking.score,
+        },
+        ReturnValues: 'ALL_NEW',
+      });
+    }
+
     const params = {
       TableName: 'Games',
       Key: { id: gameId },
