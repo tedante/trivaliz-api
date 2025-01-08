@@ -153,16 +153,6 @@ export class GamesService {
     }
     game.players[playerId] += points;
 
-    // Update the game in the database
-    // await this.dynamoDBService.update({
-    //   TableName: 'Games',
-    //   Key: { id: gameId },
-    //   UpdateExpression: 'SET players = :players',
-    //   ExpressionAttributeValues: {
-    //     ':players': game.players,
-    //   },
-    // });
-
     await dynamoDBClient()
       .update({
         TableName: 'Games',
@@ -217,22 +207,18 @@ export class GamesService {
     await dynamoDBClient().update(params).promise();
 
     return { rankings };
-    // return result.Item;
+  }
 
-    // Update game status to 'ended'
-    // await this.dynamoDBService.update({
-    //   TableName: 'Games',
-    //   Key: { id: gameId },
-    //   UpdateExpression: 'SET #status = :status, rankings = :rankings',
-    //   ExpressionAttributeNames: {
-    //     '#status': 'status',
-    //   },
-    //   ExpressionAttributeValues: {
-    //     ':status': 'ended',
-    //     ':rankings': rankings,
-    //   },
-    // });
+  async getGameHistory(userId: string): Promise<any> {
+    const params = {
+      TableName: 'Games',
+      FilterExpression: 'attribute_exists(players.#playerId)',
+      ExpressionAttributeNames: {
+        '#playerId': userId,
+      },
+    };
 
-    // return { rankings };
+    const result = await dynamoDBClient().scan(params).promise();
+    return result.Items;
   }
 }

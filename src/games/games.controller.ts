@@ -25,4 +25,10 @@ export class GamesController {
   async getGame(@Param('gameId') gameId: string) {
     return this.gamesService.findGame(gameId);
   }
+
+  @Get('history')
+  async getGameHistory(@Req() request: Request) {
+    const user = request.user as any;
+    return this.gamesService.getGameHistory(user.id);
+  }
 }

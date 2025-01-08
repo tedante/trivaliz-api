@@ -30,6 +30,8 @@ export class AuthService {
         email,
         password: hashedPassword,
         country,
+        picture:
+          'https://ui-avatars.com/api/?name=' + username + '&background=random',
       });
       return user;
     } catch (error) {
@@ -58,19 +60,14 @@ export class AuthService {
       username: user.username,
       email: user.email,
       country: user.country,
+      picture: user.picture,
     };
 
     const token = this.jwtService.sign(payload);
 
     return {
       token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        country: user.country,
-        xp: user.xp,
-      },
+      user: payload,
     };
   }
 
@@ -86,6 +83,7 @@ export class AuthService {
             10,
           ),
           country: null,
+          picture: payload.picture,
         });
 
         user = await this.usersService.findByEmail(payload.email);
@@ -97,6 +95,7 @@ export class AuthService {
         email: user.Items[0].email,
         country: user.Items[0].country,
         xp: user.Items[0].xp,
+        picture: user.Items[0].picture,
       };
 
       return userLogin;

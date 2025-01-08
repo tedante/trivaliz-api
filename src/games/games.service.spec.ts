@@ -3,12 +3,14 @@ import { GamesService } from './games.service';
 import { GeminiService } from '../gemini-ai/gemini-ai.service';
 import { dynamoDBClient } from '../dynamodb/dynamodb.service';
 import { NotFoundException } from '@nestjs/common';
+import { scan } from 'rxjs';
 
 jest.mock('../dynamodb/dynamodb.service', () => ({
   dynamoDBClient: jest.fn().mockReturnValue({
     put: jest.fn().mockReturnThis(),
     get: jest.fn().mockReturnThis(),
     update: jest.fn().mockReturnThis(),
+    scan: jest.fn().mockReturnThis(),
     promise: jest.fn(),
   }),
 }));
@@ -266,6 +268,9 @@ const game = {
       ],
     },
   ],
+  players: {
+    '3d6badd4-633c-4f99-8fe5-573feb459a0d': 0,
+  },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -409,6 +414,18 @@ describe('GamesService', () => {
       const result = await service.joinPlayer(gameCreated, playerId);
 
       expect(result.players).toHaveProperty(playerId);
+    });
+  });
+
+  // test getGameHistory
+  describe('getGameHistory', () => {
+    it('should get game history for a user', async () => {
+      const playerId = '3d6badd4-633c-4f99-8fe5-573feb459a0d';
+      const games = [game];
+      dynamoDB.scan().promise.mockResolvedValueOnce({ Items: games });
+      const result = await service.getGameHistory(playerId);
+
+      expect(result).toEqual(games);
     });
   });
 });

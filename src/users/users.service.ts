@@ -21,6 +21,7 @@ export class UsersService {
           email: user.email,
           password: user.password,
           country: user.country,
+          picture: user.picture,
           xp: 0,
         },
       })

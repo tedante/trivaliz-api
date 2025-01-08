@@ -26,6 +26,7 @@ const users = [
     password: hashedPassword,
     country: 'Indonesia',
     xp: 0,
+    picture: 'https://ui-avatars.com/api/?name=user1&background=random',
   },
   {
     id: uuidv4(),
@@ -34,6 +35,7 @@ const users = [
     password: hashedPassword,
     country: 'Indonesia',
     xp: 0,
+    picture: 'https://ui-avatars.com/api/?name=user2&background=random',
   },
   // Add more sample users as needed
 ];
