@@ -4,13 +4,11 @@ import { dynamoDBClient } from 'src/dynamodb/dynamodb.service';
 
 config();
 
-const { AWS_DYNAMODB_ENDPOINT_URL, AWS_REGION } = process.env;
-
 const dynamoDB = new AWS.DynamoDB({
-  region: AWS_REGION,
-  endpoint: AWS_DYNAMODB_ENDPOINT_URL,
-  accessKeyId: 'fakeMyKeyId', // Dummy values for local DynamoDB
-  secretAccessKey: 'fakeSecretAccessKey', // Dummy values for local DynamoDB
+  region: process.env.AWS_REGION,
+  endpoint: process.env.AWS_DYNAMODB_ENDPOINT_URL,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
 const params = {

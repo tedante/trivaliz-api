@@ -52,5 +52,7 @@ export const dynamoDBClient = (): DocumentClient => {
   return new AWS.DynamoDB.DocumentClient({
     region: AWS_REGION,
     endpoint: AWS_DYNAMODB_ENDPOINT_URL,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   });
 };
