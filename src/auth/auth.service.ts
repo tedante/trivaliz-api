@@ -70,6 +70,7 @@ export class AuthService {
         username: user.username,
         email: user.email,
         country: user.country,
+        xp: user.xp,
       },
     };
   }
@@ -97,6 +98,7 @@ export class AuthService {
         username: user.Items[0].username,
         email: user.Items[0].email,
         country: user.Items[0].country,
+        xp: user.Items[0].xp,
       };
 
       return userLogin;

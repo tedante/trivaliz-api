@@ -23,5 +23,6 @@ export class AppModule implements NestModule {
       path: 'games/start',
       method: RequestMethod.POST,
     });
+    consumer.apply(AuthMiddleware).forRoutes('users');
   }
 }
