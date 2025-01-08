@@ -35,12 +35,12 @@ export class UsersService {
   }
 
   async findByIds(ids: string[]): Promise<any> {
-    const keys = ids.map(id => ({ id }));
+    const keys = ids.map((id) => ({ id }));
     const params = {
       RequestItems: {
-        'Users': {
+        Users: {
           Keys: keys,
-          ProjectionExpression: 'id, username, email'
+          ProjectionExpression: 'id, username, email',
         },
       },
     };

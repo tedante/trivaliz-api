@@ -15,7 +15,7 @@ export class AuthController {
       country: string;
     },
   ) {
-    const register = await this.authService.register(
+    await this.authService.register(
       body.username,
       body.email,
       body.password,
@@ -35,6 +35,12 @@ export class AuthController {
   @Post('login')
   async login(@Body() body: { email: string; password: string }) {
     const user = await this.authService.validateUser(body.email, body.password);
+    return this.authService.login(user);
+  }
+
+  @Post('login/google')
+  async googleLogin(@Body() body: { googleToken: string }) {
+    const user = await this.authService.googleLogin(body.googleToken);
     return this.authService.login(user);
   }
 }

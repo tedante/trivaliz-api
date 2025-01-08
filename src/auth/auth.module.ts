@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { config } from 'dotenv';
+import { GoogleAuthService } from './google.service';
 
 config();
 
@@ -18,7 +19,7 @@ config();
     }),
     UsersModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, GoogleAuthService],
   controllers: [AuthController],
   exports: [AuthService],
 })
