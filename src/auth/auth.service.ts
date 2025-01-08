@@ -2,15 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
-import { GoogleAuthService } from './google.service';
+import type { TokenPayload } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private googleAuthService: GoogleAuthService,
-  ) {}
+  ) { }
 
   async register(
     username: string,
@@ -75,9 +74,8 @@ export class AuthService {
     };
   }
 
-  async googleLogin(googleToken: string) {
+  async googleLogin(payload: TokenPayload) {
     try {
-      const payload = await this.googleAuthService.verifyIdToken(googleToken);
       let user = await this.usersService.findByEmail(payload.email);
       if (user.Count === 0) {
         await this.usersService.create({

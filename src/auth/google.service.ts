@@ -8,14 +8,23 @@ export class GoogleAuthService {
   private oauth2Client: OAuth2Client;
 
   constructor() {
-    this.oauth2Client = new OAuth2Client();
+    this.oauth2Client = new OAuth2Client({
+      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      redirectUri: 'postmessage',
+    });
+  }
+
+  async verifyAuthCode(authCode: string): Promise<any> {
+    const response = await this.oauth2Client.getToken(authCode);
+    return response.tokens;
   }
 
   async verifyIdToken(idToken: string): Promise<any> {
     try {
       const ticket = await this.oauth2Client.verifyIdToken({
         idToken,
-        audience: process.env.GOOGLE_CLIENT_ID,
+        audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
       });
 
       const payload = ticket.getPayload();
