@@ -21,6 +21,7 @@ export class UsersService {
           email: user.email,
           password: user.password,
           country: user.country,
+          xp: 0,
         },
       })
       .promise();
@@ -31,7 +32,13 @@ export class UsersService {
       TableName: 'Users',
       Key: { id },
     };
-    return await dynamoDBClient().get(params).promise();
+
+    const users = await dynamoDBClient().get(params).promise();
+    if (!users.Item) {
+      return { message: 'User not found' };
+    }
+
+    return users.Item;
   }
 
   async findByIds(ids: string[]): Promise<any> {

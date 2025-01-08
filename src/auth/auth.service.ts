@@ -82,7 +82,7 @@ export class AuthService {
         email: payload.email,
         username: payload.email.split('@')[0],
         password: bcrypt.hashSync(Math.random().toString(36).substring(7), 10),
-        country: null,
+        country: null
       });
 
       user = await this.usersService.findByEmail(payload.email);

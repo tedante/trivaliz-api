@@ -25,6 +25,7 @@ const users = [
     email: 'user1@yopmail.com',
     password: hashedPassword,
     country: 'Indonesia',
+    xp: 0,
   },
   {
     id: uuidv4(),
@@ -32,6 +33,7 @@ const users = [
     email: 'user2@yopmail.com',
     password: hashedPassword,
     country: 'Indonesia',
+    xp: 0,
   },
   // Add more sample users as needed
 ];
