@@ -13,7 +13,12 @@ export class GamesController {
 
     let country = body.country || user.country;
 
-    return this.gamesService.startGame(user.id, country, body.mode);
+    return this.gamesService.startGame(
+      user.id,
+      country,
+      body.mode,
+      body.answerDuration,
+    );
   }
 
   @Get(':gameId')
