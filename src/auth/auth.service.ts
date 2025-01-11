@@ -60,6 +60,7 @@ export class AuthService {
       username: user.username,
       email: user.email,
       country: user.country,
+      xp: user.xp,
       picture: user.picture,
     };
 
