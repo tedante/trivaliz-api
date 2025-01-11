@@ -32,6 +32,7 @@ export class UsersService {
     const params = {
       TableName: 'Users',
       Key: { id },
+      ProjectionExpression: 'id, username, email, picture, country, xp',
     };
 
     const users = await dynamoDBClient().get(params).promise();
