@@ -188,7 +188,7 @@ export class GamesService {
           ':xp': ranking.score,
         },
         ReturnValues: 'ALL_NEW',
-      });
+      }).promise();
     }
 
     const params = {
