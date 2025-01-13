@@ -91,14 +91,23 @@ export class UsersService {
     const params = {
       TableName: 'Users',
       Key: { id },
-      UpdateExpression: 'set username = :username, email = :email',
+      UpdateExpression:
+        'set username = :username, country = :country, picture = :picture',
       ExpressionAttributeValues: {
         ':username': data.username,
-        ':email': data.email,
+        ':country': data.country,
+        ':picture': data.picture,
       },
       ReturnValues: 'ALL_NEW',
     };
-    return await dynamoDBClient().update(params).promise();
+    const update = await dynamoDBClient().update(params).promise();
+
+    return {
+      id: update.Attributes.id,
+      username: update.Attributes.username,
+      country: update.Attributes.country,
+      picture: update.Attributes.picture
+    };
   }
 
   async delete(id: string): Promise<any> {

@@ -1,12 +1,28 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  UseInterceptors,
+  UploadedFile,
+  Put,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Request } from 'express';
+import { Request, Express } from 'express';
 // import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 // @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   // @Post()
   // async create(@Body() user: any) {
@@ -26,10 +42,23 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  // @Put(':id')
-  // async update(@Param('id') id: string, @Body() user: any) {
-  //   return this.usersService.update(id, user);
-  // }
+  @Put('/')
+  @UseInterceptors(FileInterceptor('photo'))
+  async update(
+    @Req() request: Request,
+    @Param('id') id: string,
+    @Body() updateData: { country?: string; username?: string },
+    @UploadedFile() photo: Express.Multer.File,
+  ) {
+    if (photo) {
+      const photoUrl = await this.cloudinaryService.uploadImage(photo);      
+      updateData['picture'] = photoUrl;
+    }
+    
+    
+    const user = request.user as any;
+    return this.usersService.update(user.id, updateData);
+  }
 
   // @Delete(':id')
   // async delete(@Param('id') id: string) {

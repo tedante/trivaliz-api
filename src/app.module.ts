@@ -5,15 +5,26 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { GeminiModule } from './gemini-ai/gemini-ai.module';
 import { GamesModule } from './games/games.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, GeminiModule, GamesModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    UsersModule,
+    AuthModule,
+    GeminiModule,
+    GamesModule,
+    CloudinaryModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
