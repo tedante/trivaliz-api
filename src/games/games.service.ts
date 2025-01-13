@@ -43,10 +43,14 @@ export class GamesService {
   ): Promise<any> {
     // Generate question and answer using Google Gemini
     const prompt = `
-    You are creating trivia questions for a "Family Feud"-style game. Make 10 the question is relate and with ${country} country also use ${country} language Provide:
+    You are creating trivia questions for a "Family Feud"-style game. Make 10 the question that can be explore and learn about the customs, traditions, quirks of the people in ${country} or general knowledge, culture, history, or anything that can be fun and interesting.
+    Use English as the language.
     1. A trivia question.
     2. A list of posibble answers must be 4, ordered by popularity.
     3. Points for each answer (100 for the most common, decreasing randomly).
+    4. Make the question and answers as fun and interesting as possible.
+    5. Do not include any offensive or inappropriate content.
+    6. Make the question like the player and the host are in the same country.
     Example output:json. please response in json format.
     {
       "question": "Name something people do when they're tired.",
