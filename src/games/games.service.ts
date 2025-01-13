@@ -180,15 +180,17 @@ export class GamesService {
 
     // update xp of users in the database
     for (const ranking of rankings) {
-      await dynamoDBClient().update({
-        TableName: 'Users',
-        Key: { id: ranking.playerId },
-        UpdateExpression: 'SET xp = xp + :xp',
-        ExpressionAttributeValues: {
-          ':xp': ranking.score,
-        },
-        ReturnValues: 'ALL_NEW',
-      }).promise();
+      await dynamoDBClient()
+        .update({
+          TableName: 'Users',
+          Key: { id: ranking.playerId },
+          UpdateExpression: 'SET xp = xp + :xp',
+          ExpressionAttributeValues: {
+            ':xp': ranking.score,
+          },
+          ReturnValues: 'ALL_NEW',
+        })
+        .promise();
     }
 
     const params = {

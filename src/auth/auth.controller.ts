@@ -5,7 +5,10 @@ import { GoogleLoginDto } from './auth.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService, private googleAuthService: GoogleAuthService) {}
+  constructor(
+    private authService: AuthService,
+    private googleAuthService: GoogleAuthService,
+  ) {}
 
   @Post('register')
   async register(
@@ -44,14 +47,14 @@ export class AuthController {
 
   @Post('login/google')
   async googleLogin(@Body() body: GoogleLoginDto) {
-    const { type, value } = body
+    const { type, value } = body;
 
-    let idToken = ''
+    let idToken = '';
     if (type === 'credential') {
-      idToken = value
+      idToken = value;
     } else {
-      const tokens = await this.googleAuthService.verifyAuthCode(value)
-      idToken = tokens.id_token
+      const tokens = await this.googleAuthService.verifyAuthCode(value);
+      idToken = tokens.id_token;
     }
 
     const payload = await this.googleAuthService.verifyIdToken(idToken);
