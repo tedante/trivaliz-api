@@ -14,11 +14,14 @@ export class GamesService {
   constructor(private readonly geminiService: GeminiService) {}
 
   async create(game: any): Promise<any> {
+    const players = {};
+    players[game.hostId] = 0;
     const params = {
       TableName: 'Games',
       Item: {
         id: uuidv4(),
         ...game,
+        players,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
@@ -214,13 +217,18 @@ export class GamesService {
   async getGameHistory(userId: string): Promise<any> {
     const params = {
       TableName: 'Games',
+      // do not return questions property
+      ProjectionExpression: 'id, country, answerDuration, players, #mode, createdAt, updatedAt, #status',
       FilterExpression: 'attribute_exists(players.#playerId)',
       ExpressionAttributeNames: {
         '#playerId': userId,
+        '#mode': 'mode',
+        '#status': 'status',
       },
     };
 
     const result = await dynamoDBClient().scan(params).promise();
+
     return result.Items;
   }
 }

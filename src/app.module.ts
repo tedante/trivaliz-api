@@ -30,10 +30,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes({
-      path: 'games/start',
-      method: RequestMethod.POST,
-    });
+    consumer.apply(AuthMiddleware).forRoutes('games');
     consumer.apply(AuthMiddleware).forRoutes('users');
   }
 }
