@@ -17,8 +17,8 @@ export class AuthService {
     password: string,
     country: string,
   ) {
-    const hashedPassword = await bcrypt.hash(password, 10);
     try {
+      const hashedPassword = await bcrypt.hash(password, 10);
       const findUser = await this.usersService.findByEmail(email);
 
       if (findUser.Count > 0) {
@@ -40,36 +40,47 @@ export class AuthService {
   }
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email);
-    if (user.Count === 0) {
-      throw new UnauthorizedException('Invalid email or password');
+    try {
+      const user = await this.usersService.findByEmail(email);
+      if (user.Count === 0) {
+        throw new UnauthorizedException('Invalid email or password');
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        pass,
+        user.Items[0].password,
+      );
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid email or password');
+      }
+
+      return user.Items[0];
+    } catch (error) {
+      throw new UnauthorizedException(`Validation failed: ${error.message}`);
     }
-
-    const isPasswordValid = await bcrypt.compare(pass, user.Items[0].password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
-
-    return user.Items[0];
   }
 
   async login(user: any) {
-    const payload = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      country: user.country,
-      xp: user.xp,
-      picture: user.picture,
-    };
+    try {
+      const payload = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        country: user.country,
+        xp: user.xp,
+        picture: user.picture,
+      };
 
-    const token = this.jwtService.sign(payload);
+      const token = this.jwtService.sign(payload);
 
-    return {
-      token,
-      user: payload,
-    };
+      return {
+        token,
+        user: payload,
+      };
+    } catch (error) {
+      throw new UnauthorizedException(`Login failed: ${error.message}`);
+    }
   }
 
   async googleLogin(payload: TokenPayload) {
