@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GeminiService } from '../gemini-ai/gemini-ai.service';
-import { dynamoDBClient } from '../dynamodb/dynamodb.service';
+import { DynamoDBService } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
 
 interface PlayerScore {
@@ -10,7 +10,10 @@ interface PlayerScore {
 
 @Injectable()
 export class GamesService {
-  constructor(private readonly geminiService: GeminiService) {}
+  constructor(
+    private readonly geminiService: GeminiService,
+    private readonly dynamoDBService: DynamoDBService,
+  ) {}
 
   async create(game: any): Promise<any> {
     const players = {};
@@ -27,7 +30,10 @@ export class GamesService {
     };
 
     try {
-      await dynamoDBClient().put(params).promise();
+      await this.dynamoDBService
+        .dynamoDB 
+        .put(params)
+        .promise();
       return params.Item;
     } catch (error) {
       throw new Error(`Failed to create game: ${error.message}`);
@@ -104,7 +110,7 @@ export class GamesService {
     };
 
     try {
-      const result = await dynamoDBClient().get(params).promise();
+      const result = await this.dynamoDBService.dynamoDB.get(params).promise();
       if (!result.Item) {
         throw new NotFoundException(`Game with ID ${gameId} not found`);
       }
@@ -126,7 +132,8 @@ export class GamesService {
 
       game.players[playerId] = 0;
 
-      await dynamoDBClient()
+      await this.dynamoDBService
+        .dynamoDB 
         .update({
           TableName: 'Games',
           Key: { id: game.id },
@@ -169,7 +176,8 @@ export class GamesService {
       }
       game.players[playerId] += points;
 
-      await dynamoDBClient()
+      await this.dynamoDBService
+        .dynamoDB 
         .update({
           TableName: 'Games',
           Key: { id: gameId },
@@ -199,7 +207,8 @@ export class GamesService {
         .sort((a, b) => b.score - a.score);
 
       for (const ranking of rankings) {
-        await dynamoDBClient()
+        await this.dynamoDBService
+          .dynamoDB 
           .update({
             TableName: 'Users',
             Key: { id: ranking.playerId },
@@ -225,7 +234,7 @@ export class GamesService {
         },
       };
 
-      await dynamoDBClient().update(params).promise();
+      await this.dynamoDBService.dynamoDB.update(params).promise();
 
       return { rankings };
     } catch (error) {
@@ -247,7 +256,10 @@ export class GamesService {
     };
 
     try {
-      const result = await dynamoDBClient().scan(params).promise();
+      const result = await this.dynamoDBService
+        .dynamoDB 
+        .scan(params)
+        .promise();
       return result.Items;
     } catch (error) {
       throw new Error(`Failed to get game history: ${error.message}`);

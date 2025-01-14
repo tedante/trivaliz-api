@@ -1,6 +1,5 @@
 import * as AWS from 'aws-sdk';
 import { config } from 'dotenv';
-import { dynamoDBClient } from 'src/dynamodb/dynamodb.service';
 
 config();
 

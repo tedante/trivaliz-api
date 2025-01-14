@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { dynamoDBClient } from '../dynamodb/dynamodb.service';
+import { DynamoDBService } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
+  constructor(private dynamoDBService: DynamoDBService) {}
+
   async findAll(): Promise<any> {
     try {
       const params = {
         TableName: 'Users',
       };
-      return await dynamoDBClient().scan(params).promise();
+      return await this.dynamoDBService.dynamoDB.scan(params).promise();
     } catch (error) {
       throw new Error(`Error fetching all users: ${error.message}`);
     }
@@ -17,7 +19,7 @@ export class UsersService {
 
   async create(user: any): Promise<any> {
     try {
-      return await dynamoDBClient()
+      return await this.dynamoDBService.dynamoDB
         .put({
           TableName: 'Users',
           Item: {
@@ -44,7 +46,7 @@ export class UsersService {
         ProjectionExpression: 'id, username, email, picture, country, xp',
       };
 
-      const users = await dynamoDBClient().get(params).promise();
+      const users = await this.dynamoDBService.dynamoDB.get(params).promise();
       if (!users.Item) {
         return { message: 'User not found' };
       }
@@ -66,7 +68,7 @@ export class UsersService {
           },
         },
       };
-      const response = await dynamoDBClient().batchGet(params).promise();
+      const response = await this.dynamoDBService.dynamoDB.batchGet(params).promise();
       return response.Responses['Users'];
     } catch (error) {
       throw new Error(`Error fetching users by ids: ${error.message}`);
@@ -86,7 +88,7 @@ export class UsersService {
         },
       };
 
-      return await dynamoDBClient().scan(params).promise();
+      return await this.dynamoDBService.dynamoDB.scan(params).promise();
     } catch (error) {
       throw new Error(`Error fetching user by email: ${error.message}`);
     }
@@ -105,7 +107,7 @@ export class UsersService {
         },
       };
 
-      return await dynamoDBClient().scan(params).promise();
+      return await this.dynamoDBService.dynamoDB.scan(params).promise();
     } catch (error) {
       throw new Error(`Error fetching user by username: ${error.message}`);
     }
@@ -125,7 +127,7 @@ export class UsersService {
         },
         ReturnValues: 'ALL_NEW',
       };
-      const update = await dynamoDBClient().update(params).promise();
+      const update = await this.dynamoDBService.dynamoDB.update(params).promise();
 
       return {
         id: update.Attributes.id,
@@ -144,7 +146,7 @@ export class UsersService {
         TableName: 'Users',
         Key: { id },
       };
-      return await dynamoDBClient().delete(params).promise();
+      return await this.dynamoDBService.dynamoDB.delete(params).promise();
     } catch (error) {
       throw new Error(`Error deleting user with id ${id}: ${error.message}`);
     }

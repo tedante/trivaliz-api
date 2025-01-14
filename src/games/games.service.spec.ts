@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GamesService } from './games.service';
 import { GeminiService } from '../gemini-ai/gemini-ai.service';
-import { dynamoDBClient } from '../dynamodb/dynamodb.service';
+import { DynamoDBClient } from '../dynamodb/dynamodb.service';
 import { NotFoundException } from '@nestjs/common';
 import { scan } from 'rxjs';
 
 jest.mock('../dynamodb/dynamodb.service', () => ({
-  dynamoDBClient: jest.fn().mockReturnValue({
+  DynamoDBClient: jest.fn().mockReturnValue({
     put: jest.fn().mockReturnThis(),
     get: jest.fn().mockReturnThis(),
     update: jest.fn().mockReturnThis(),
@@ -293,7 +293,7 @@ describe('GamesService', () => {
     }).compile();
 
     service = module.get<GamesService>(GamesService);
-    dynamoDB = dynamoDBClient();
+    dynamoDB = DynamoDBClient();
   });
 
   it('should be defined', () => {
