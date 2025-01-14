@@ -49,7 +49,7 @@ export class UsersService {
       RequestItems: {
         Users: {
           Keys: keys,
-          ProjectionExpression: 'id, username, email',
+          ProjectionExpression: 'id, username, email, picture',
         },
       },
     };
