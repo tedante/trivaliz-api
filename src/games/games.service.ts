@@ -44,7 +44,7 @@ export class GamesService {
     // Generate question and answer using Google Gemini
     const prompt = `
     You are creating trivia questions for a "Family Feud"-style game. Make 10 the question that can be explore and learn about the customs, traditions, quirks of the people in ${country} or general knowledge, culture, history, or anything that can be fun and interesting.
-    Use English as the language.
+    Use ${country === 'Indonesia' ? 'Indonesia' : 'English'} as the language.
     1. A trivia question.
     2. A list of posibble answers must be 4, ordered by popularity.
     3. Points for each answer (100 for the most common, decreasing randomly).
