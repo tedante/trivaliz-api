@@ -50,13 +50,15 @@ export class UsersController {
     @Body() updateData: { country?: string; username?: string },
     @UploadedFile() photo: Express.Multer.File,
   ) {
-    if (photo) {
-      const photoUrl = await this.cloudinaryService.uploadImage(photo);      
-      updateData['picture'] = photoUrl;
-    }
-    
-    
     const user = request.user as any;
+
+    if (photo) {
+      const photoUrl = await this.cloudinaryService.uploadImage(photo);
+      updateData['picture'] = photoUrl;
+    } else {
+      updateData['picture'] = user.picture;
+    }
+
     return this.usersService.update(user.id, updateData);
   }
 
