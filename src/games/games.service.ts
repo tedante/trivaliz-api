@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { GeminiService } from '../gemini-ai/gemini-ai.service';
 import { DynamoDBService } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
+import * as Sentry from '@sentry/node';
 
 interface PlayerScore {
   playerId: string;
@@ -30,13 +31,10 @@ export class GamesService {
     };
 
     try {
-      await this.dynamoDBService
-        .dynamoDB 
-        .put(params)
-        .promise();
+      await this.dynamoDBService.dynamoDB.put(params).promise();
       return params.Item;
     } catch (error) {
-      throw new Error(`Failed to create game: ${error.message}`);
+      Sentry.captureException(error);
     }
   }
 
@@ -99,7 +97,7 @@ export class GamesService {
 
       return result;
     } catch (error) {
-      throw new Error(`Failed to start game: ${error.message}`);
+      Sentry.captureException(error);
     }
   }
 
@@ -116,7 +114,8 @@ export class GamesService {
       }
       return result.Item;
     } catch (error) {
-      throw new Error(`Failed to find game: ${error.message}`);
+      console.log(error, '>>>>');
+      Sentry.captureException(error);
     }
   }
 
@@ -132,8 +131,7 @@ export class GamesService {
 
       game.players[playerId] = 0;
 
-      await this.dynamoDBService
-        .dynamoDB 
+      await this.dynamoDBService.dynamoDB
         .update({
           TableName: 'Games',
           Key: { id: game.id },
@@ -146,7 +144,7 @@ export class GamesService {
 
       return game;
     } catch (error) {
-      throw new Error(`Failed to join player: ${error.message}`);
+      Sentry.captureException(error);
     }
   }
 
@@ -176,8 +174,7 @@ export class GamesService {
       }
       game.players[playerId] += points;
 
-      await this.dynamoDBService
-        .dynamoDB 
+      await this.dynamoDBService.dynamoDB
         .update({
           TableName: 'Games',
           Key: { id: gameId },
@@ -190,7 +187,7 @@ export class GamesService {
 
       return { points };
     } catch (error) {
-      throw new Error(`Failed to submit answer: ${error.message}`);
+      Sentry.captureException(error);
     }
   }
 
@@ -207,8 +204,7 @@ export class GamesService {
         .sort((a, b) => b.score - a.score);
 
       for (const ranking of rankings) {
-        await this.dynamoDBService
-          .dynamoDB 
+        await this.dynamoDBService.dynamoDB
           .update({
             TableName: 'Users',
             Key: { id: ranking.playerId },
@@ -238,7 +234,7 @@ export class GamesService {
 
       return { rankings };
     } catch (error) {
-      throw new Error(`Failed to end game: ${error.message}`);
+      Sentry.captureException(error);
     }
   }
 
@@ -256,13 +252,10 @@ export class GamesService {
     };
 
     try {
-      const result = await this.dynamoDBService
-        .dynamoDB 
-        .scan(params)
-        .promise();
+      const result = await this.dynamoDBService.dynamoDB.scan(params).promise();
       return result.Items;
     } catch (error) {
-      throw new Error(`Failed to get game history: ${error.message}`);
+      Sentry.captureException(error);
     }
   }
 }
