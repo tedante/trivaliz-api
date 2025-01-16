@@ -74,6 +74,7 @@ export class GamesService {
         answerDuration,
         questions: response,
       };
+
       const gameCreated = await this.create(newGame);
 
       const result = {
@@ -83,16 +84,18 @@ export class GamesService {
         mode: gameCreated.mode,
         answerDuration: gameCreated.answerDuration,
         hostId: gameCreated.hostId,
-        questions: gameCreated.questions.map((e) => {
-          return {
-            question: e.question,
-            answers: e.answers.map((answer) => {
+        questions: !gameCreated.questions
+          ? []
+          : gameCreated.questions.map((e) => {
               return {
-                text: answer.text,
+                question: e.question,
+                answers: e.answers.map((answer) => {
+                  return {
+                    text: answer.text,
+                  };
+                }),
               };
             }),
-          };
-        }),
       };
 
       return result;
@@ -114,7 +117,6 @@ export class GamesService {
       }
       return result.Item;
     } catch (error) {
-      console.log(error, '>>>>');
       Sentry.captureException(error);
     }
   }

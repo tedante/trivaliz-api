@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
-import { UsersService } from 'src/users/users.service'
+import { UsersService } from 'src/users/users.service';
 import * as Sentry from '@sentry/node';
 
 @WebSocketGateway({

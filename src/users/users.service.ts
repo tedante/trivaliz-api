@@ -68,7 +68,9 @@ export class UsersService {
           },
         },
       };
-      const response = await this.dynamoDBService.dynamoDB.batchGet(params).promise();
+      const response = await this.dynamoDBService.dynamoDB
+        .batchGet(params)
+        .promise();
       return response.Responses['Users'];
     } catch (error) {
       throw new Error(`Error fetching users by ids: ${error.message}`);
@@ -127,13 +129,15 @@ export class UsersService {
         },
         ReturnValues: 'ALL_NEW',
       };
-      const update = await this.dynamoDBService.dynamoDB.update(params).promise();
+      const update = await this.dynamoDBService.dynamoDB
+        .update(params)
+        .promise();
 
       return {
         id: update.Attributes.id,
         username: update.Attributes.username,
         country: update.Attributes.country,
-        picture: update.Attributes.picture
+        picture: update.Attributes.picture,
       };
     } catch (error) {
       throw new Error(`Error updating user with id ${id}: ${error.message}`);
