@@ -6,7 +6,10 @@ import { UsersService } from 'src/users/users.service';
 
 @Controller('games')
 export class GamesController {
-  constructor(private readonly gamesService: GamesService, private readonly usersService: UsersService) {}
+  constructor(
+    private readonly gamesService: GamesService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post('start')
   async startGame(@Req() request: Request, @Body() body: StartGameDto) {
@@ -35,11 +38,13 @@ export class GamesController {
     const playerIds = Object.keys(game.players);
     const players = await this.usersService.findByIds(playerIds);
 
-    const rankings = game.rankings.map((ranking) => ({
-      playerId: ranking.playerId,
-      score: ranking.score,
-      player: players.find((player) => player.id === ranking.playerId),
-    }));
+    const rankings = !game.rankings
+      ? []
+      : game.rankings.map((ranking) => ({
+          playerId: ranking.playerId,
+          score: ranking.score,
+          player: players.find((player) => player.id === ranking.playerId),
+        }));
 
     return {
       ...game,
