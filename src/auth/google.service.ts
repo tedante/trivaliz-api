@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
+import * as Sentry from '@sentry/node';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -16,8 +17,12 @@ export class GoogleAuthService {
   }
 
   async verifyAuthCode(authCode: string): Promise<any> {
-    const response = await this.oauth2Client.getToken(authCode);
-    return response.tokens;
+    try {
+      const response = await this.oauth2Client.getToken(authCode);
+      return response.tokens;
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   async verifyIdToken(idToken: string): Promise<any> {
@@ -34,7 +39,7 @@ export class GoogleAuthService {
         picture: payload.picture,
       };
     } catch (error) {
-      throw new Error(`Token Invalid`);
+      Sentry.captureException(error);
     }
   }
 }

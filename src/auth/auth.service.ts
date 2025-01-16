@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import type { TokenPayload } from 'google-auth-library';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +36,7 @@ export class AuthService {
       });
       return user;
     } catch (error) {
-      throw new UnauthorizedException(`Registration failed: ${error.message}`);
+      Sentry.captureException(error);
     }
   }
 
